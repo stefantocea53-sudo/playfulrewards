@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>PlayfulRewards - Verdiene Belohnungen durch Scrollen</title>
+  <link rel="icon" href="playfulrewards-logo.png">
+  <link rel="preload" as="image" href="playfulrewards-logo.png" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #070018;
+      --bg2: #12004a;
+      --card: rgba(255, 255, 255, .075);
+      --card2: rgba(255, 255, 255, .12);
+      --text: #ffffff;
+      --muted: #c8c3ef;
+      --purple: #5b22ff;
+      --purple2: #7b2cff;
+      --gold: #ffd84d;
+      --gold2: #ffb300;
+      --green: #35ff9d;
+      --pink: #ff3df2;
+      --line: rgba(255,255,255,.13);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,216,77,.22), transparent 26%),
+        radial-gradient(circle at 82% 8%, rgba(255,61,242,.20), transparent 30%),
+        radial-gradient(circle at 50% 10%, rgba(123,44,255,.45), transparent 42%),
+        linear-gradient(180deg, #080018 0%, #120044 48%, #060012 100%);
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(20px);
+      opacity: .4;
+      z-index: -1;
+    }
+
+    body::before {
+      left: -110px;
+      top: 90px;
+      background: rgba(255,216,77,.35);
+    }
+
+    body::after {
+      right: -130px;
+      top: 300px;
+      background: rgba(123,44,255,.55);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 12px 12px 30px;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: #1b0066;
+      overflow: hidden;
+      flex: 0 0 auto;
+      box-shadow: 0 12px 26px rgba(0,0,0,.28);
+      border: 1px solid rgba(255,255,255,.15);
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 17px;
+      letter-spacing: -.04em;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .top .mini {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 950;
+      color: #fff5bf;
+      background: rgba(255,216,77,.13);
+      border: 1px solid rgba(255,216,77,.32);
+      border-radius: 999px;
+      padding: 7px 10px;
+      text-transform: uppercase;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.06));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 17px;
+      margin-bottom: 12px;
+      box-shadow:
+        0 20px 50px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.16);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      right: -70px;
+      top: -70px;
+      border-radius: 50%;
+      background: rgba(255,216,77,.22);
+    }
+
+    .hero::after {
+      content: "🪙";
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      font-size: 38px;
+      opacity: .9;
+      transform: rotate(16deg);
+    }
+
+    .badge {
+      width: fit-content;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 950;
+      color: #fff2b7;
+      background: rgba(255,216,77,.12);
+      border: 1px solid rgba(255,216,77,.25);
+      border-radius: 999px;
+      padding: 7px 10px;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      font-size: 37px;
+      line-height: .98;
+      letter-spacing: -.065em;
+      margin-bottom: 10px;
+      max-width: 330px;
+    }
+
+    .hero h1 span {
+      color: var(--gold);
+      text-shadow: 0 0 22px rgba(255,216,77,.32);
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #e8e4ff;
+      margin-bottom: 13px;
+      max-width: 350px;
+    }
+
+    .money-box {
+      position: relative;
+      z-index: 1;
+      background:
+        linear-gradient(135deg, rgba(255,216,77,.16), rgba(123,44,255,.16));
+      border: 1px solid rgba(255,216,77,.24);
+      border-radius: 20px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .money-box strong {
+      display: block;
+      color: #fff2b7;
+      font-size: 14px;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+
+    .money-box span {
+      display: block;
+      color: #f2edff;
+      font-size: 12px;
+      line-height: 1.45;
+      opacity: .94;
+    }
+
+    .quick {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .quick div {
+      background: rgba(255,255,255,.075);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 10px 6px;
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .quick strong {
+      font-size: 15px;
+      display: block;
+    }
+
+    .quick span {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 3px;
+      font-weight: 800;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 14px 2px 8px;
+    }
+
+    .section-title strong {
+      font-size: 14px;
+    }
+
+    .section-title span {
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 950;
+    }
+
+    .tasks {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .task {
+      min-height: 84px;
+      border-radius: 21px;
+      padding: 12px;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,.13), rgba(255,255,255,.055));
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 26px rgba(0,0,0,.16);
+    }
+
+    .task::after {
+      content: "";
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      right: -28px;
+      top: -24px;
+      background: rgba(255,216,77,.15);
+    }
+
+    .emoji {
+      font-size: 25px;
+      margin-bottom: 7px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .task strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.15;
+      position: relative;
+      z-index: 1;
+    }
+
+    .task span {
+      display: block;
+      color: var(--muted);
+      font-size: 10.5px;
+      margin-top: 5px;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+
+    .phone-card {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.055));
+      border: 1px solid var(--line);
+      border-radius: 25px;
+      padding: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .phone-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .phone-head strong {
+      font-size: 14px;
+    }
+
+    .phone-head span {
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .feed {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 7px;
+    }
+
+    .clip {
+      height: 126px;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      background:
+        linear-gradient(160deg, rgba(255,61,242,.45), rgba(91,34,255,.5)),
+        linear-gradient(180deg, #211064, #080018);
+      border: 1px solid rgba(255,255,255,.13);
+    }
+
+    .clip:nth-child(2) {
+      background:
+        linear-gradient(160deg, rgba(255,216,77,.45), rgba(91,34,255,.45)),
+        linear-gradient(180deg, #311875, #080018);
+    }
+
+    .clip:nth-child(3) {
+      background:
+        linear-gradient(160deg, rgba(53,255,157,.38), rgba(123,44,255,.48)),
+        linear-gradient(180deg, #211064, #080018);
+    }
+
+    .clip::before {
+      content: "";
+      position: absolute;
+      width: 36px;
+      height: 5px;
+      border-radius: 999px;
+      left: 10px;
+      bottom: 12px;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 -12px 0 rgba(255,255,255,.38);
+    }
+
+    .clip .play {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
+    .clip .coin {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      font-size: 18px;
+    }
+
+    .cta {
+      position: sticky;
+      bottom: 10px;
+      z-index: 5;
+      margin: 10px 0 12px;
+    }
+
+    .main-btn {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      text-decoration: none;
+      border: 0;
+      cursor: pointer;
+      width: 100%;
+      min-height: 78px;
+      border-radius: 25px;
+      padding: 14px 16px;
+      background:
+        linear-gradient(180deg, #ffe36d, #ffb300);
+      color: #1b0a00;
+      box-shadow:
+        0 20px 45px rgba(255,179,0,.34),
+        inset 0 1px 0 rgba(255,255,255,.55);
+      gap: 14px;
+      font-weight: 950;
+      transition: .15s transform, .15s filter;
+    }
+
+    .main-btn:hover {
+      filter: brightness(1.05);
+    }
+
+    .main-btn:active {
+      transform: scale(.98);
+    }
+
+    .age-mark {
+      width: 58px;
+      height: 58px;
+      border-radius: 19px;
+      background: rgba(25,10,0,.12);
+      border: 1px solid rgba(25,10,0,.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      flex: 0 0 auto;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
+    }
+
+    .btn-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.13;
+    }
+
+    .btn-text strong {
+      font-size: 21px;
+      letter-spacing: -.035em;
+    }
+
+    .btn-text small {
+      display: block;
+      font-size: 12px;
+      opacity: .84;
+      margin-top: 5px;
+    }
+
+    .steps {
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      padding: 9px 0;
+    }
+
+    .step + .step {
+      border-top: 1px solid var(--line);
+    }
+
+    .num {
+      width: 34px;
+      height: 34px;
+      border-radius: 13px;
+      background: rgba(255,216,77,.15);
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 1000;
+    }
+
+    .step h3 {
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .step p {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .note {
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.45;
+      color: #c8c3ef;
+      margin-top: -2px;
+      margin-bottom: 9px;
+      padding: 0 6px;
+    }
+
+    footer {
+      text-align: center;
+      color: #8f89bd;
+      font-size: 11px;
+      line-height: 1.5;
+      padding: 5px 0;
+    }
+
+    @media (max-width: 360px) {
+      .hero h1 {
+        font-size: 33px;
+      }
+
+      .main-btn {
+        padding: 12px;
+      }
+
+      .btn-text strong {
+        font-size: 19px;
+      }
+
+      .age-mark {
+        width: 54px;
+        height: 54px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main id="landing" class="wrap">
+
+    <header class="top">
+      <div class="logo">
+        <img src="playfulrewards-logo.png" alt="PlayfulRewards Logo">
+      </div>
+
+      <div class="brand">
+        <strong>PlayfulRewards</strong>
+        <span>Scrollen. Sammeln. Belohnungen.</span>
+      </div>
+
+      <div class="mini">Heute aktiv</div>
+    </header>
+
+    <section class="hero">
+      <div class="badge">🪙 Neue Belohnungen verfügbar</div>
+
+      <h1>
+        TikTok scrollen.<br>
+        <span>Belohnungen sammeln.</span>
+      </h1>
+
+      <p>
+        Entdecke kurze Clips, scrolle durch neue Inhalte und sammle Rewards für einfache Online-Aktivitäten.
+      </p>
+
+      <div class="money-box">
+        <strong>Starte mit einfachen Aufgaben direkt auf deinem Smartphone.</strong>
+        <span>Je nach verfügbaren Angeboten kannst du Punkte, Coins oder Geldprämien sammeln.</span>
+      </div>
+
+      <div class="quick">
+        <div>
+          <strong>10 €</strong>
+          <span>Startbonus</span>
+        </div>
+
+        <div>
+          <strong>18+</strong>
+          <span>Mindestalter</span>
+        </div>
+
+        <div>
+          <strong>Daily</strong>
+          <span>Neue Tasks</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <strong>Beliebte Scroll-Aufgaben</strong>
+      <span>Jetzt starten</span>
+    </div>
+
+    <section class="tasks">
+      <div class="task">
+        <div class="emoji">📱</div>
+        <strong>TikTok Scrolling</strong>
+        <span>Kurzclips ansehen</span>
+      </div>
+
+      <div class="task">
+        <div class="emoji">🔥</div>
+        <strong>Trending Feeds</strong>
+        <span>Neue Inhalte entdecken</span>
+      </div>
+
+      <div class="task">
+        <div class="emoji">🎮</div>
+        <strong>Mini Challenges</strong>
+        <span>Schnelle Aufgaben</span>
+      </div>
+
+      <div class="task">
+        <div class="emoji">🪙</div>
+        <strong>Coin Rewards</strong>
+        <span>Punkte sammeln</span>
+      </div>
+    </section>
+
+    <section class="phone-card">
+      <div class="phone-head">
+        <strong>Live Reward Feed</strong>
+        <span>● Online</span>
+      </div>
+
+      <div class="feed">
+        <div class="clip">
+          <div class="coin">🪙</div>
+          <div class="play">▶</div>
+        </div>
+
+        <div class="clip">
+          <div class="coin">💰</div>
+          <div class="play">▶</div>
+        </div>
+
+        <div class="clip">
+          <div class="coin">⭐</div>
+          <div class="play">▶</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="cta">
+      <a
+        class="main-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+        href="PASTE_LINK_HERE"
+        id="mainCta"
+      >
+        <span class="age-mark">18+</span>
+
+        <span class="btn-text">
+          <strong>Rewards freischalten</strong>
+          <small>Kostenlos starten & Aufgaben entdecken</small>
+        </span>
+      </a>
+    </div>
+
+    <p class="note">
+      Nur für neue Konten ab 18 Jahren. Belohnungen hängen von verfügbaren Angeboten, Region und erfolgreich abgeschlossenen Aufgaben ab.
+    </p>
+
+    <section class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <h3>PlayfulRewards öffnen</h3>
+          <p>Tippe auf den Button und öffne das Angebot direkt auf deinem Smartphone.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <h3>Kostenlos registrieren</h3>
+          <p>Erstelle dein Konto und schalte verfügbare Scroll- und Reward-Aufgaben frei.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <h3>Scrollen & Rewards sammeln</h3>
+          <p>Erledige einfache Aufgaben, entdecke kurze Clips und sammle deine Belohnungen.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Datenschutz · Nutzungsbedingungen · Haftungsausschluss<br>
+      © 2026 PlayfulRewards
+    </footer>
+
+  </main>
+
+  <script>
+    const qs = window.location.search.replace(/^\?/, '');
+
+    if (qs) {
+      const cta = document.getElementById('mainCta');
+      cta.href += (cta.href.includes('?') ? '&' : '?') + qs;
+    }
+  </script>
+
+</body>
+</html>
